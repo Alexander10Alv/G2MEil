@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>G2MEil — Conecta tu Gmail</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Roboto:wght@300;400;500&display=swap');
+
+    :root {
+      --gmail-red: #EA4335;
+      --gmail-blue: #4285F4;
+      --gmail-blue-dark: #1a73e8;
+      --gmail-blue-light: #e8f0fe;
+      --text-primary: #202124;
+      --text-secondary: #5f6368;
+      --border: #dadce0;
+      --white: #ffffff;
+      --bg: #f8f9fa;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Roboto', sans-serif;
+      background: var(--bg);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Header */
+    header {
+      background: var(--white);
+      border-bottom: 1px solid var(--border);
+      padding: 12px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo-icon {
+      width: 36px;
+      height: 36px;
+      background: var(--gmail-blue);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-family: 'Google Sans', sans-serif;
+      font-weight: 700;
+      font-size: 18px;
+    }
+
+    .logo-text {
+      font-family: 'Google Sans', sans-serif;
+      font-size: 22px;
+      color: var(--text-primary);
+      font-weight: 500;
+    }
+
+    .logo-text span {
+      color: var(--gmail-blue);
+    }
+
+    .dev-credit {
+      font-size: 11px;
+      color: var(--text-secondary);
+      font-style: italic;
+    }
+
+    /* Main */
+    main {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
+    }
+
+    .card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 48px 40px;
+      max-width: 420px;
+      width: 100%;
+      text-align: center;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    }
+
+    /* Nokia illustration */
+    .nokia-wrap {
+      position: relative;
+      display: inline-block;
+      margin-bottom: 32px;
+    }
+
+    .nokia-svg {
+      width: 64px;
+      height: 90px;
+    }
+
+    .wifi-badge {
+      position: absolute;
+      bottom: -4px;
+      right: -12px;
+      width: 28px;
+      height: 28px;
+      background: var(--gmail-blue);
+      border-radius: 50%;
+      border: 2px solid white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .card h1 {
+      font-family: 'Google Sans', sans-serif;
+      font-size: 24px;
+      color: var(--text-primary);
+      font-weight: 500;
+      margin-bottom: 8px;
+    }
+
+    .card p {
+      color: var(--text-secondary);
+      font-size: 14px;
+      line-height: 1.6;
+      margin-bottom: 32px;
+    }
+
+    /* Steps */
+    .steps {
+      text-align: left;
+      margin-bottom: 32px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .step {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+    .step-num {
+      width: 24px;
+      height: 24px;
+      background: var(--gmail-blue-light);
+      color: var(--gmail-blue);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 700;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .step-text {
+      font-size: 13px;
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+
+    .step-text strong {
+      color: var(--text-primary);
+    }
+
+    /* Auth button */
+    .btn-google {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      width: 100%;
+      padding: 13px 24px;
+      background: var(--gmail-blue);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 15px;
+      font-family: 'Google Sans', sans-serif;
+      font-weight: 500;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background 0.2s;
+    }
+
+    .btn-google:hover {
+      background: var(--gmail-blue-dark);
+    }
+
+    .btn-google svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    /* Code result */
+    .code-section {
+      display: none;
+      margin-top: 32px;
+      padding: 24px;
+      background: var(--gmail-blue-light);
+      border-radius: 12px;
+      border: 1px solid #c5d9f7;
+    }
+
+    .code-section.visible {
+      display: block;
+    }
+
+    .code-label {
+      font-size: 12px;
+      color: var(--gmail-blue);
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 8px;
+    }
+
+    .code-display {
+      font-size: 40px;
+      font-family: 'Google Sans', sans-serif;
+      font-weight: 700;
+      color: var(--gmail-blue-dark);
+      letter-spacing: 8px;
+      margin-bottom: 8px;
+    }
+
+    .code-hint {
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+
+    /* Loading */
+    .loading {
+      display: none;
+      margin-top: 20px;
+      color: var(--text-secondary);
+      font-size: 13px;
+    }
+
+    .loading.visible {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .dot {
+      width: 6px;
+      height: 6px;
+      background: var(--gmail-blue);
+      border-radius: 50%;
+      animation: bounce 1.2s infinite;
+    }
+    .dot:nth-child(2) { animation-delay: 0.2s; }
+    .dot:nth-child(3) { animation-delay: 0.4s; }
+
+    @keyframes bounce {
+      0%, 80%, 100% { transform: scale(0.6); opacity: 0.4; }
+      40% { transform: scale(1); opacity: 1; }
+    }
+
+    /* Error */
+    .error-msg {
+      display: none;
+      margin-top: 16px;
+      padding: 12px 16px;
+      background: #fce8e6;
+      border-radius: 8px;
+      color: var(--gmail-red);
+      font-size: 13px;
+    }
+
+    .error-msg.visible {
+      display: block;
+    }
+
+    /* Footer */
+    footer {
+      text-align: center;
+      padding: 20px;
+      font-size: 11px;
+      color: var(--text-secondary);
+    }
+
+    footer a {
+      color: var(--gmail-blue);
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <div class="logo-icon">G2</div>
+    <span class="logo-text">G2M<span>Eil</span></span>
+  </div>
+  <span class="dev-credit">by Arek Tennyson</span>
+</header>
+
+<main>
+  <div class="card">
+
+    <!-- Nokia illustration -->
+    <div class="nokia-wrap">
+      <svg class="nokia-svg" viewBox="0 0 64 90" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="8" y="2" width="48" height="86" rx="8" fill="#e8eaed"/>
+        <rect x="12" y="6" width="40" height="78" rx="6" fill="#dadce0"/>
+        <rect x="14" y="10" width="36" height="40" rx="3" fill="#202124"/>
+        <rect x="16" y="12" width="32" height="36" rx="2" fill="#1a73e8" opacity="0.9"/>
+        <!-- Screen content simulado -->
+        <rect x="18" y="16" width="28" height="4" rx="1" fill="white" opacity="0.8"/>
+        <rect x="18" y="23" width="20" height="2" rx="1" fill="white" opacity="0.5"/>
+        <rect x="18" y="28" width="24" height="2" rx="1" fill="white" opacity="0.5"/>
+        <rect x="18" y="33" width="18" height="2" rx="1" fill="white" opacity="0.5"/>
+        <!-- Teclado -->
+        <rect x="16" y="56" width="10" height="8" rx="2" fill="#bdc1c6"/>
+        <rect x="28" y="56" width="10" height="8" rx="2" fill="#bdc1c6"/>
+        <rect x="40" y="56" width="10" height="8" rx="2" fill="#bdc1c6"/>
+        <rect x="16" y="68" width="10" height="8" rx="2" fill="#bdc1c6"/>
+        <rect x="28" y="68" width="10" height="8" rx="2" fill="#bdc1c6"/>
+        <rect x="40" y="68" width="10" height="8" rx="2" fill="#bdc1c6"/>
+      </svg>
+      <div class="wifi-badge">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="white">
+          <path d="M1 9l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 2.93 7.08 2.93 1 9zm8 8l3 3 3-3a4.237 4.237 0 00-6 0zm-4-4l2 2a7.074 7.074 0 0110 0l2-2C15.14 9.14 8.87 9.14 5 13z"/>
+        </svg>
+      </div>
+    </div>
+
+    <h1>Conecta tu Gmail</h1>
+    <p>Inicia sesión con Google y obtén tu código de acceso para usar <strong>G2MEil</strong> en tu Nokia.</p>
+
+    <!-- Pasos -->
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-text"><strong>Conecta tu cuenta</strong> — Haz clic en el botón y autoriza el acceso a Gmail</div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-text"><strong>Copia tu código</strong> — Recibirás un código de 6 dígitos único</div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-text"><strong>Ingrésalo en G2MEil</strong> — Abre la app en tu Nokia y escribe el código</div>
+      </div>
+    </div>
+
+    <!-- Botón de auth -->
+    <a class="btn-google" href="#" id="authBtn" onclick="startAuth(event)">
+      <svg viewBox="0 0 24 24" fill="white">
+        <path d="M12 11h8.533c.044.385.067.78.067 1.184C20.6 17.48 17.1 21 12 21c-4.971 0-9-4.029-9-9s4.029-9 9-9c2.43 0 4.629.966 6.248 2.527L16.18 7.594C15.044 6.547 13.596 5.9 12 5.9 8.637 5.9 5.9 8.637 5.9 12c0 3.363 2.737 6.1 6.1 6.1 3.152 0 5.378-2.006 5.833-4.7H12v-2.4z"/>
+      </svg>
+      Continuar con Google
+    </a>
+
+    <!-- Loading -->
+    <div class="loading" id="loading">
+      <div class="dot"></div>
+      <div class="dot"></div>
+      <div class="dot"></div>
+      <span>Autenticando...</span>
+    </div>
+
+    <!-- Error -->
+    <div class="error-msg" id="errorMsg"></div>
+
+    <!-- Código resultado -->
+    <div class="code-section" id="codeSection">
+      <div class="code-label">Tu código de acceso</div>
+      <div class="code-display" id="codeDisplay">------</div>
+      <div class="code-hint">Escribe este código en G2MEil en tu Nokia. No lo compartas con nadie.</div>
+    </div>
+
+  </div>
+</main>
+
+<footer>
+  G2MEil by Arek Tennyson &nbsp;·&nbsp;
+  <a href="#">Política de privacidad</a>
+</footer>
+
+<script>
+  // CONFIGURACION - Reemplazar con tus valores reales
+  const WORKER_URL = 'TU_WORKER_URL_AQUI'; // ej: https://g2meil-worker.TU_USUARIO.workers.dev
+  const GOOGLE_CLIENT_ID = 'TU_GOOGLE_CLIENT_ID_AQUI';
+  const REDIRECT_URI = window.location.origin + '/callback';
+
+  const SCOPES = [
+    'https://www.googleapis.com/auth/gmail.readonly',
+    'https://www.googleapis.com/auth/gmail.send',
+    'https://www.googleapis.com/auth/gmail.modify'
+  ].join(' ');
+
+  function startAuth(e) {
+    e.preventDefault();
+
+    const authUrl = new URL('https://accounts.google.com/o/oauth2/v2/auth');
+    authUrl.searchParams.set('client_id', GOOGLE_CLIENT_ID);
+    authUrl.searchParams.set('redirect_uri', REDIRECT_URI);
+    authUrl.searchParams.set('response_type', 'code');
+    authUrl.searchParams.set('scope', SCOPES);
+    authUrl.searchParams.set('access_type', 'offline');
+    authUrl.searchParams.set('prompt', 'consent');
+
+    window.location.href = authUrl.toString();
+  }
+
+  // Verificar si venimos del callback con ?code=...
+  async function checkCallback() {
+    const params = new URLSearchParams(window.location.search);
+    const code = params.get('code');
+    const error = params.get('error');
+
+    if (error) {
+      showError('Autenticación cancelada. Intenta de nuevo.');
+      return;
+    }
+
+    if (code) {
+      document.getElementById('authBtn').style.display = 'none';
+      document.getElementById('loading').classList.add('visible');
+
+      try {
+        const res = await fetch(WORKER_URL + '/auth', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ code, redirect_uri: REDIRECT_URI })
+        });
+
+        const data = await res.json();
+
+        if (data.userCode) {
+          document.getElementById('loading').classList.remove('visible');
+          document.getElementById('codeDisplay').textContent = data.userCode;
+          document.getElementById('codeSection').classList.add('visible');
+          // Limpiar URL
+          window.history.replaceState({}, '', '/');
+        } else {
+          throw new Error(data.error || 'Error desconocido');
+        }
+      } catch (err) {
+        document.getElementById('loading').classList.remove('visible');
+        document.getElementById('authBtn').style.display = 'flex';
+        showError('Error al conectar: ' + err.message);
+      }
+    }
+  }
+
+  function showError(msg) {
+    const el = document.getElementById('errorMsg');
+    el.textContent = msg;
+    el.classList.add('visible');
+  }
+
+  checkCallback();
+</script>
+
+</body>
+</html>
