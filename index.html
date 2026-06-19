@@ -396,10 +396,13 @@
 </footer>
 
 <script>
-  // CONFIGURACION - Reemplazar con tus valores reales
-  const WORKER_URL = 'TU_WORKER_URL_AQUI'; // ej: https://g2meil-worker.TU_USUARIO.workers.dev
-  const GOOGLE_CLIENT_ID = 'TU_GOOGLE_CLIENT_ID_AQUI';
-  const REDIRECT_URI = window.location.origin + '/callback';
+  const WORKER_URL = 'https://g2meil.arekutennyson23.workers.dev';
+
+  // El client_id se usa solo para construir la URL de auth en el cliente.
+  // El intercambio real de tokens lo hace el Worker server-side.
+  const GOOGLE_CLIENT_ID = 'TU_GOOGLE_CLIENT_ID_AQUI'; // reemplazar con tu client_id
+
+  const REDIRECT_URI = WORKER_URL + '/callback';
 
   const SCOPES = [
     'https://www.googleapis.com/auth/gmail.readonly',
@@ -409,7 +412,6 @@
 
   function startAuth(e) {
     e.preventDefault();
-
     const authUrl = new URL('https://accounts.google.com/o/oauth2/v2/auth');
     authUrl.searchParams.set('client_id', GOOGLE_CLIENT_ID);
     authUrl.searchParams.set('redirect_uri', REDIRECT_URI);
@@ -417,48 +419,25 @@
     authUrl.searchParams.set('scope', SCOPES);
     authUrl.searchParams.set('access_type', 'offline');
     authUrl.searchParams.set('prompt', 'consent');
-
     window.location.href = authUrl.toString();
   }
 
-  // Verificar si venimos del callback con ?code=...
-  async function checkCallback() {
+  // El worker redirige a /?userCode=XXXXXX después del callback
+  function checkResult() {
     const params = new URLSearchParams(window.location.search);
-    const code = params.get('code');
+    const userCode = params.get('userCode');
     const error = params.get('error');
 
     if (error) {
-      showError('Autenticación cancelada. Intenta de nuevo.');
+      showError('Autenticación cancelada o fallida. Intenta de nuevo.');
       return;
     }
 
-    if (code) {
+    if (userCode) {
       document.getElementById('authBtn').style.display = 'none';
-      document.getElementById('loading').classList.add('visible');
-
-      try {
-        const res = await fetch(WORKER_URL + '/auth', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ code, redirect_uri: REDIRECT_URI })
-        });
-
-        const data = await res.json();
-
-        if (data.userCode) {
-          document.getElementById('loading').classList.remove('visible');
-          document.getElementById('codeDisplay').textContent = data.userCode;
-          document.getElementById('codeSection').classList.add('visible');
-          // Limpiar URL
-          window.history.replaceState({}, '', '/');
-        } else {
-          throw new Error(data.error || 'Error desconocido');
-        }
-      } catch (err) {
-        document.getElementById('loading').classList.remove('visible');
-        document.getElementById('authBtn').style.display = 'flex';
-        showError('Error al conectar: ' + err.message);
-      }
+      document.getElementById('codeDisplay').textContent = userCode;
+      document.getElementById('codeSection').classList.add('visible');
+      window.history.replaceState({}, '', '/');
     }
   }
 
@@ -468,7 +447,7 @@
     el.classList.add('visible');
   }
 
-  checkCallback();
+  checkResult();
 </script>
 
 </body>
